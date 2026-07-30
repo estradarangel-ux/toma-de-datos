@@ -171,8 +171,8 @@
 #siti-app dl.spec dt{color:#5c6659;}
 #siti-app dl.spec dd{margin:0;font-weight:500;}
 #siti-app .summary-services-chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 22px;}
-#siti-app .summary-service{margin-bottom:26px;page-break-inside:avoid;}
-#siti-app .summary-service h3{font-size:14px;text-transform:uppercase;letter-spacing:.05em;padding-bottom:6px;border-bottom:1px solid var(--ink);margin-bottom:12px;}
+#siti-app .summary-service{margin-bottom:26px;}
+#siti-app .summary-service h3{font-size:14px;text-transform:uppercase;letter-spacing:.05em;padding-bottom:6px;border-bottom:1px solid var(--ink);margin-bottom:12px;break-after:avoid;}
 #siti-app .summary-item-list{margin-top:12px;display:flex;flex-direction:column;gap:12px;}
 #siti-app .summary-item{border:1px solid var(--line);background:var(--mist);padding:13px 15px;page-break-inside:avoid;position:relative;}
 #siti-app .summary-item-title{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-dark);font-weight:700;margin-bottom:8px;}
@@ -198,7 +198,6 @@
   #siti-app .topbar{position:static;}
   #siti-app main{padding:0;}
   #siti-app{max-width:none;}
-  #siti-app .summary-service{break-inside:avoid;}
   #siti-app .summary-item{break-inside:avoid;}
 }
 @media (prefers-reduced-motion: reduce){
@@ -1171,12 +1170,130 @@ function buildTextSummary(){
   return lines.join('\n');
 }
 
+function csvEscape(v){
+  if(v===undefined||v===null) v='';
+  v = String(v);
+  if(/[",\n\r]/.test(v)){
+    v = '"'+v.replace(/"/g,'""')+'"';
+  }
+  return v;
+}
+function csvRow(arr){ return arr.map(csvEscape).join(','); }
+
+function buildCSV(){
+  var lines = [];
+  lines.push(csvRow(['LEVANTAMIENTO EN SITIO — SITI']));
+  lines.push('');
+  lines.push(csvRow(['Campo','Valor']));
+  GENERAL_FIELDS.forEach(function(f){
+    var v = fieldValueText(f, current.general[f.key]);
+    if(v) lines.push(csvRow([f.label, v]));
+  });
+  lines.push('');
+  lines.push(csvRow(['Servicios incluidos', current.services.map(function(s){ return SERVICES[s]?SERVICES[s].label:s; }).join('; ')]));
+
+  current.services.forEach(function(key){
+    var conf = SERVICES[key];
+    var d = current.data[key] || {fields:{}, repeatable:{}};
+    lines.push('');
+    lines.push(csvRow([conf.label.toUpperCase()]));
+
+    var simpleFields = conf.fields.filter(function(f){ return f.type!=='checkbox-qty'; });
+    var fieldRows = simpleFields.map(function(f){
+      var v = fieldValueText(f, d.fields[f.key]);
+      v = withOtherText(f, d.fields, v);
+      return v ? [f.label, v] : null;
+    }).filter(Boolean);
+    if(fieldRows.length){
+      lines.push(csvRow(['Campo','Valor']));
+      fieldRows.forEach(function(r){ lines.push(csvRow(r)); });
+    }
+
+    conf.fields.filter(function(f){ return f.type==='checkbox-qty'; }).forEach(function(f){
+      var arr = Array.isArray(d.fields[f.key]) ? d.fields[f.key] : [];
+      if(!arr.length) return;
+      var qty = d.fields[f.key+'_qty'] || {};
+      lines.push('');
+      lines.push(csvRow([f.label]));
+      lines.push(csvRow(['Opción','Cantidad']));
+      arr.forEach(function(o){
+        lines.push(csvRow([o, qty[o]!==undefined ? qty[o] : '']));
+      });
+    });
+
+    if(conf.repeatable){
+      var items = (d.repeatable && d.repeatable[conf.repeatable.key]) || [];
+      if(items.length){
+        var cols = conf.repeatable.fields;
+        lines.push('');
+        lines.push(csvRow([conf.repeatable.label]));
+        lines.push(csvRow(['#'].concat(cols.map(function(f){ return f.label; }))));
+        items.forEach(function(item, idx){
+          lines.push(csvRow([idx+1].concat(cols.map(function(f){ return fieldValueText(f, item[f.key]); }))));
+        });
+
+        if(conf.repeatable.hasCanalizacionDetail){
+          var anyCal = items.some(function(it){ return (it.canalizacion_detalle||[]).length; });
+          if(anyCal){
+            lines.push('');
+            lines.push(csvRow(['Detalle de canalización — '+conf.repeatable.label]));
+            lines.push(csvRow([conf.repeatable.itemLabel+' #','Tipo','Medida','Distancia (m)','Observaciones']));
+            items.forEach(function(item, idx){
+              (item.canalizacion_detalle||[]).forEach(function(r){
+                lines.push(csvRow([idx+1, r.tipo||'', r.medida||'', r.distancia||'', r.observaciones||'']));
+              });
+            });
+          }
+        }
+        if(conf.repeatable.hasEnergiaDetail){
+          var anyEn = items.some(function(it){ return (it.energia_detalle||[]).length; });
+          if(anyEn){
+            lines.push('');
+            lines.push(csvRow(['Detalle de corriente eléctrica — '+conf.repeatable.label]));
+            lines.push(csvRow([conf.repeatable.itemLabel+' #','Tipo de conductor','Calibre','Tipo de canalización','Medida','Distancia (m)','Observaciones']));
+            items.forEach(function(item, idx){
+              (item.energia_detalle||[]).forEach(function(r){
+                lines.push(csvRow([idx+1, r.tipo||'', r.calibre||'', r.canalizacion_tipo||'', r.canalizacion_medida||'', r.distancia||'', r.observaciones||'']));
+              });
+            });
+          }
+        }
+      }
+    }
+  });
+
+  lines.push('');
+  lines.push(csvRow(['Generado', new Date().toLocaleString('es-MX')]));
+  return lines.join('\r\n');
+}
+
+function downloadCSV(){
+  try {
+    var csv = '\uFEFF' + buildCSV();
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    var safeName = (current.general.cliente || 'levantamiento').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'') || 'levantamiento';
+    a.download = 'levantamiento_'+safeName+'.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    showToast('CSV descargado');
+  } catch(e){
+    showToast('No se pudo generar el CSV.', true);
+  }
+}
+
+
 function renderSummary(){
   var html = '<div class="noprint" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">'+
     '<button class="btn secondary" id="btn-back-list">← Levantamientos</button>'+
     '<button class="btn ghost" id="btn-edit-this">Editar</button>'+
     '<button class="btn ghost" id="btn-print">Imprimir / Guardar PDF</button>'+
     '<button class="btn ghost" id="btn-copy">Copiar resumen</button>'+
+    '<button class="btn ghost" id="btn-csv">Descargar CSV</button>'+
   '</div>';
 
   html += '<div class="summary-header"><img src="'+LOGO_SRC+'" alt="SITI"/>'+
@@ -1220,6 +1337,7 @@ function renderSummary(){
       navigator.clipboard.writeText(text).then(function(){ showToast('Resumen copiado'); }).catch(fallbackCopy);
     } else { fallbackCopy(); }
   };
+  document.getElementById('btn-csv').onclick = downloadCSV;
 }
 
 function goSummary(id){
