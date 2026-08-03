@@ -1,0 +1,18 @@
+{
+  "name": "Levantamiento en Sitio — SITI",
+  "short_name": "Levantamiento SITI",
+  "description": "Captura de información técnica en sitio para cotizar servicios de telecomunicaciones — SITI",
+  "id": "/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#58AD50",
+  "orientation": "portrait-primary",
+  "lang": "es-MX",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
