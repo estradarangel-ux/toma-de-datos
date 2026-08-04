@@ -18,23 +18,50 @@
 <div id="siti-app">
 <style>
 #siti-app {
-  --ink:#181c18;
+  --bg:#ffffff;
+  --surface:#ffffff;
+  --surface-alt:#f4f6f3;
+  --text:#181c18;
+  --text-muted:#5c6659;
+  --text-faint:#8a9385;
+  --border:#dbe2d8;
   --green:#58AD50;
-  --green-dark:#356b30;
-  --green-mist:#eef6ec;
-  --paper:#ffffff;
-  --mist:#f4f6f3;
-  --line:#dbe2d8;
-  --amber:#b5722a;
+  --green-strong:#356b30;
+  --green-tint:#eef6ec;
   --danger:#a33a2f;
+  --btn-primary-bg:#181c18;
+  --btn-primary-text:#ffffff;
+  --overlay:rgba(20,24,19,.55);
+  --topbar-bg:rgba(255,255,255,.96);
+  color-scheme: light;
   font-family:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;
-  color:var(--ink);
-  background:var(--paper);
+  color:var(--text);
+  background:var(--bg);
   max-width:760px;
   margin:0 auto;
   line-height:1.45;
   -webkit-font-smoothing:antialiased;
 }
+#siti-app[data-theme="dark"]{
+  --bg:#14170f;
+  --surface:#1c2016;
+  --surface-alt:#242a1b;
+  --text:#eef1e9;
+  --text-muted:#a3ac9a;
+  --text-faint:#7b8471;
+  --border:#333a2b;
+  --green:#7bc873;
+  --green-strong:#a8dea1;
+  --green-tint:#1f2e19;
+  --danger:#e2685a;
+  --btn-primary-bg:var(--green);
+  --btn-primary-text:#10150c;
+  --overlay:rgba(0,0,0,.65);
+  --topbar-bg:rgba(20,23,15,.92);
+  color-scheme: dark;
+}
+@media (min-width:900px){ #siti-app{ max-width:880px; } }
+@media (min-width:1200px){ #siti-app{ max-width:1040px; } }
 #siti-app *{box-sizing:border-box;}
 #siti-app .disp{font-family:'Space Grotesk','Inter',system-ui,sans-serif;}
 #siti-app h1,#siti-app h2,#siti-app h3{font-family:'Space Grotesk','Inter',system-ui,sans-serif;margin:0;font-weight:700;}
@@ -44,15 +71,17 @@
 /* ---------- Topbar ---------- */
 #siti-app .topbar{
   display:flex;align-items:center;gap:12px;
-  padding:14px 16px;border-bottom:1px solid var(--line);
-  position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(4px);z-index:20;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--topbar-bg);backdrop-filter:blur(4px);z-index:20;
 }
 #siti-app .topbar img{height:34px;width:34px;object-fit:contain;flex:0 0 auto;}
-#siti-app .topbar .word{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#586256;}
+#siti-app .topbar .word{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
 #siti-app .topbar .brand-title{font-size:15px;letter-spacing:.02em;}
+#siti-app .topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+#siti-app .theme-toggle{padding:7px 11px;font-size:12px;white-space:nowrap;}
 
 #siti-app .storage-note{
-  font-size:11.5px;color:#5c6659;background:var(--mist);border-bottom:1px solid var(--line);
+  font-size:11.5px;color:var(--text-muted);background:var(--surface-alt);border-bottom:1px solid var(--border);
   padding:7px 16px;text-align:center;
 }
 
@@ -60,15 +89,15 @@
 
 /* ---------- Buttons ---------- */
 #siti-app .btn{
-  border:1px solid var(--ink);background:var(--ink);color:#fff;
+  border:1px solid var(--btn-primary-bg);background:var(--btn-primary-bg);color:var(--btn-primary-text);
   padding:11px 18px;font-size:14px;font-weight:600;letter-spacing:.01em;
   border-radius:0;transition:background .15s,color .15s,border-color .15s;
 }
-#siti-app .btn:hover{background:var(--green-dark);border-color:var(--green-dark);}
-#siti-app .btn.secondary{background:transparent;color:var(--ink);}
-#siti-app .btn.secondary:hover{background:var(--mist);}
-#siti-app .btn.ghost{background:transparent;border-color:var(--line);color:#54604f;}
-#siti-app .btn.ghost:hover{border-color:var(--ink);color:var(--ink);}
+#siti-app .btn:hover{background:var(--green-strong);border-color:var(--green-strong);}
+#siti-app .btn.secondary{background:transparent;color:var(--text);border-color:var(--btn-primary-bg);}
+#siti-app .btn.secondary:hover{background:var(--surface-alt);}
+#siti-app .btn.ghost{background:transparent;border-color:var(--border);color:var(--text-muted);}
+#siti-app .btn.ghost:hover{border-color:var(--text);color:var(--text);}
 #siti-app .btn.danger{background:transparent;border-color:var(--danger);color:var(--danger);}
 #siti-app .btn.danger:hover{background:var(--danger);color:#fff;}
 #siti-app .btn.block{width:100%;}
@@ -79,15 +108,18 @@
 /* ---------- List view ---------- */
 #siti-app .list-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;}
 #siti-app .empty-state{
-  border:1px dashed var(--line);padding:40px 20px;text-align:center;color:#5c6659;font-size:14px;
+  border:1px dashed var(--border);padding:40px 20px;text-align:center;color:var(--text-muted);font-size:14px;
 }
+#siti-app .survey-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media (min-width:700px){ #siti-app .survey-grid{grid-template-columns:1fr 1fr;} }
+@media (min-width:1150px){ #siti-app .survey-grid{grid-template-columns:1fr 1fr 1fr;} }
 #siti-app .survey-card{
-  border:1px solid var(--line);margin-bottom:12px;padding:14px 16px;position:relative;background:#fff;
+  border:1px solid var(--border);padding:14px 16px;position:relative;background:var(--surface);
 }
 #siti-app .survey-card h3{font-size:16px;margin-bottom:2px;}
-#siti-app .survey-card .meta{font-size:12.5px;color:#5c6659;margin-bottom:8px;}
+#siti-app .survey-card .meta{font-size:12.5px;color:var(--text-muted);margin-bottom:8px;}
 #siti-app .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
-#siti-app .chip{font-size:11px;letter-spacing:.02em;text-transform:uppercase;border:1px solid var(--green);color:var(--green-dark);background:var(--green-mist);padding:3px 8px;}
+#siti-app .chip{font-size:11px;letter-spacing:.02em;text-transform:uppercase;border:1px solid var(--green);color:var(--green-strong);background:var(--green-tint);padding:3px 8px;}
 #siti-app .card-actions{display:flex;gap:8px;flex-wrap:wrap;}
 #siti-app .card-actions .btn{padding:8px 12px;font-size:13px;}
 
@@ -100,28 +132,28 @@
 #siti-app .bracket::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--green);border-right:2px solid var(--green);}
 
 /* ---------- Sections / accordion ---------- */
-#siti-app .section{border:1px solid var(--line);margin-bottom:14px;background:#fff;}
+#siti-app .section{border:1px solid var(--border);margin-bottom:14px;background:var(--surface);}
 #siti-app .section > .sec-title{
   padding:13px 16px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
-  border-bottom:1px solid var(--line);color:#33392f;
+  border-bottom:1px solid var(--border);color:var(--text-muted);
 }
 #siti-app .sec-body{padding:16px;}
 
 #siti-app .accordion-head{
   width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  background:var(--mist);border:none;padding:14px 16px;text-align:left;
+  background:var(--surface-alt);border:none;padding:14px 16px;text-align:left;color:var(--text);
 }
 #siti-app .accordion-head h3{font-size:14.5px;letter-spacing:.02em;}
-#siti-app .accordion-head .arrow{font-size:12px;color:#5c6659;transition:transform .15s;}
+#siti-app .accordion-head .arrow{font-size:12px;color:var(--text-muted);transition:transform .15s;}
 #siti-app .accordion.open .accordion-head .arrow{transform:rotate(90deg);}
-#siti-app .accordion-body{padding:16px;border-top:1px solid var(--line);}
+#siti-app .accordion-body{padding:16px;border-top:1px solid var(--border);}
 #siti-app .accordion-body[hidden]{display:none;}
 
 /* ---------- Fields ---------- */
 #siti-app .field{display:block;margin-bottom:14px;}
-#siti-app .field span{display:block;font-size:12.5px;color:#454e41;margin-bottom:5px;font-weight:500;}
-#siti-app input[type=text],#siti-app input[type=number],#siti-app input[type=date],#siti-app select,#siti-app textarea{
-  width:100%;border:1px solid var(--line);background:#fff;padding:10px 11px;font-size:14.5px;color:var(--ink);
+#siti-app .field span{display:block;font-size:12.5px;color:var(--text-muted);margin-bottom:5px;font-weight:500;}
+#siti-app input[type=text],#siti-app input[type=number],#siti-app input[type=date],#siti-app input[type=email],#siti-app input[type=password],#siti-app select,#siti-app textarea{
+  width:100%;border:1px solid var(--border);background:var(--surface);padding:10px 11px;font-size:14.5px;color:var(--text);
   border-radius:0;font-family:inherit;
 }
 #siti-app textarea{resize:vertical;min-height:56px;}
@@ -129,19 +161,20 @@
 @media (max-width:520px){#siti-app .field-row{grid-template-columns:1fr;}}
 
 #siti-app .chip-check-group{display:flex;flex-wrap:wrap;gap:8px;}
-#siti-app .chip-check{border:1px solid var(--line);padding:7px 11px;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;}
+#siti-app .chip-check{border:1px solid var(--border);padding:8px 12px;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;}
 #siti-app .chip-check input{margin:0;}
-#siti-app .chip-check:has(input:checked){border-color:var(--green);background:var(--green-mist);color:var(--green-dark);}
+#siti-app .chip-check:has(input:checked){border-color:var(--green);background:var(--green-tint);color:var(--green-strong);}
 
 /* ---------- Service selector cards ---------- */
 #siti-app .service-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media (max-width:480px){#siti-app .service-grid{grid-template-columns:1fr;}}
+@media (min-width:900px){#siti-app .service-grid{grid-template-columns:1fr 1fr 1fr;}}
 #siti-app .service-card{
-  border:1px solid var(--line);padding:12px 13px;position:relative;display:flex;align-items:flex-start;gap:10px;
+  border:1px solid var(--border);padding:12px 13px;position:relative;display:flex;align-items:flex-start;gap:10px;
 }
 #siti-app .service-card input{position:absolute;opacity:0;width:1px;height:1px;}
-#siti-app .service-card .box{width:16px;height:16px;border:1.5px solid #8a9385;flex:0 0 auto;margin-top:1px;position:relative;}
-#siti-app .service-card:has(input:checked){border-color:var(--green);background:var(--green-mist);}
+#siti-app .service-card .box{width:16px;height:16px;border:1.5px solid var(--text-faint);flex:0 0 auto;margin-top:1px;position:relative;}
+#siti-app .service-card:has(input:checked){border-color:var(--green);background:var(--green-tint);}
 #siti-app .service-card:has(input:checked) .box{background:var(--green);border-color:var(--green);}
 #siti-app .service-card:has(input:checked) .box::after{
   content:"";position:absolute;left:3px;top:0px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(40deg);
@@ -153,20 +186,20 @@
 #siti-app .qty-group{display:flex;flex-direction:column;gap:8px;}
 #siti-app .qty-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 #siti-app .qty-row .chip-check{flex:0 0 auto;}
-#siti-app .qty-input{width:100px;border:1px solid var(--line);padding:7px 9px;font-size:13.5px;border-radius:0;}
+#siti-app .qty-input{width:100px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:7px 9px;font-size:13.5px;border-radius:0;}
 
-#siti-app .other-text-input{width:100%;margin-top:8px;border:1px solid var(--line);padding:9px 11px;font-size:14.5px;border-radius:0;font-family:inherit;}
+#siti-app .other-text-input{width:100%;margin-top:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px 11px;font-size:14.5px;border-radius:0;font-family:inherit;}
 
 #siti-app .rep-list{margin-top:10px;}
-#siti-app .rep-item{border:1px solid var(--line);padding:13px;margin-bottom:10px;background:var(--mist);position:relative;}
+#siti-app .rep-item{border:1px solid var(--border);padding:13px;margin-bottom:10px;background:var(--surface-alt);position:relative;}
 #siti-app .rep-item .rep-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-#siti-app .rep-item .rep-head strong{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:#586256;}
-#siti-app .rep-remove{border:none;background:none;color:var(--danger);font-size:12.5px;text-decoration:underline;padding:2px;}
+#siti-app .rep-item .rep-head strong{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);}
+#siti-app .rep-remove{border:none;background:none;color:var(--danger);font-size:12.5px;text-decoration:underline;padding:6px 4px;}
 #siti-app .add-item{margin-top:4px;}
 
 /* ---------- Sticky action bar (form) ---------- */
 #siti-app .action-bar{
-  position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);
+  position:sticky;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);
   padding:12px 16px;display:flex;gap:10px;z-index:15;
 }
 #siti-app .action-bar .btn{flex:1;}
@@ -174,37 +207,37 @@
 /* ---------- Toast ---------- */
 #siti-app .toast{
   position:fixed;left:50%;bottom:90px;transform:translateX(-50%);
-  background:var(--ink);color:#fff;padding:10px 18px;font-size:13.5px;z-index:60;
+  background:var(--btn-primary-bg);color:var(--btn-primary-text);padding:10px 18px;font-size:13.5px;z-index:60;
   opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
 }
 #siti-app .toast.show{opacity:1;}
-#siti-app .toast.err{background:var(--danger);}
+#siti-app .toast.err{background:var(--danger);color:#fff;}
 
 /* ---------- Summary / print view ---------- */
-#siti-app .summary-header{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:2px solid var(--ink);margin-bottom:18px;}
+#siti-app .summary-header{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:2px solid var(--text);margin-bottom:18px;}
 #siti-app .summary-header img{height:56px;object-fit:contain;}
-#siti-app .summary-header .doc-title{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#5c6659;margin-top:4px;}
+#siti-app .summary-header .doc-title{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-top:4px;}
 #siti-app dl.spec{display:grid;grid-template-columns:170px 1fr;gap:6px 12px;margin:0;font-size:14px;}
-#siti-app dl.spec dt{color:#5c6659;}
+#siti-app dl.spec dt{color:var(--text-muted);}
 #siti-app dl.spec dd{margin:0;font-weight:500;}
 #siti-app .summary-services-chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 22px;}
 #siti-app .summary-service{margin-bottom:26px;}
-#siti-app .summary-service h3{font-size:14px;text-transform:uppercase;letter-spacing:.05em;padding-bottom:6px;border-bottom:1px solid var(--ink);margin-bottom:12px;break-after:avoid;}
+#siti-app .summary-service h3{font-size:14px;text-transform:uppercase;letter-spacing:.05em;padding-bottom:6px;border-bottom:1px solid var(--text);margin-bottom:12px;break-after:avoid;}
 #siti-app .summary-item-list{margin-top:12px;display:flex;flex-direction:column;gap:12px;}
-#siti-app .summary-item{border:1px solid var(--line);background:var(--mist);padding:13px 15px;page-break-inside:avoid;position:relative;}
-#siti-app .summary-item-title{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-dark);font-weight:700;margin-bottom:8px;}
+#siti-app .summary-item{border:1px solid var(--border);background:var(--surface-alt);padding:13px 15px;page-break-inside:avoid;position:relative;}
+#siti-app .summary-item-title{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--green-strong);font-weight:700;margin-bottom:8px;}
 #siti-app .summary-item dl.spec{grid-template-columns:150px 1fr;font-size:13.5px;background:transparent;}
-#siti-app .summary-subdetail{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:13px;color:#454e41;}
-#siti-app .summary-subdetail strong{color:var(--ink);}
-#siti-app .summary-empty-note{font-size:12.5px;color:#8a9385;font-style:italic;}
-#siti-app .summary-footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:#8a9385;}
+#siti-app .summary-subdetail{margin-top:10px;padding-top:9px;border-top:1px dashed var(--border);font-size:13px;color:var(--text-muted);}
+#siti-app .summary-subdetail strong{color:var(--text);}
+#siti-app .summary-empty-note{font-size:12.5px;color:var(--text-faint);font-style:italic;}
+#siti-app .summary-footer{margin-top:28px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--text-faint);}
 
 #siti-app .siti-confirm-overlay{
-  position:fixed;inset:0;background:rgba(20,24,19,.55);display:flex;align-items:center;justify-content:center;
+  position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;
   z-index:100;padding:20px;
 }
 #siti-app .siti-confirm-box{
-  background:#fff;max-width:340px;width:100%;padding:20px;border:1px solid var(--line);
+  background:var(--surface);max-width:340px;width:100%;padding:20px;border:1px solid var(--border);
 }
 #siti-app .siti-confirm-box p{font-size:14.5px;margin:0 0 16px;}
 #siti-app .siti-confirm-actions{display:flex;gap:10px;}
@@ -228,7 +261,10 @@
     <div class="brand-title disp">Levantamiento en sitio</div>
     <div class="word">SITI · Comunicaciones</div>
   </div>
-  <div id="siti-userbar" style="margin-left:auto;"></div>
+  <div class="topbar-actions">
+    <button type="button" class="btn ghost theme-toggle" id="siti-theme-toggle">Modo oscuro</button>
+    <div id="siti-userbar"></div>
+  </div>
 </div>
 <div class="storage-note" id="siti-storage-note">Estos levantamientos se guardan compartidos: cualquier persona con acceso a esta app puede verlos y editarlos.</div>
 
@@ -295,12 +331,12 @@ function initFirebase(){
 var SERVICE_ORDER = ['nodos','fibra','cctv_nuevo','cctv_ampliacion','pbx_nuevo','pbx_migracion','control_asistencia','control_acceso'];
 
 var GENERAL_FIELDS = [
-  {key:'cliente', label:'Cliente / Empresa', type:'text'},
+  {key:'cliente', label:'Cliente / Empresa', type:'text', pairWithNext:true},
   {key:'contacto', label:'Nombre de contacto', type:'text'},
-  {key:'telefono', label:'Teléfono', type:'text'},
+  {key:'telefono', label:'Teléfono', type:'text', pairWithNext:true},
   {key:'email', label:'Correo electrónico', type:'text'},
   {key:'direccion', label:'Dirección del sitio', type:'textarea'},
-  {key:'fecha', label:'Fecha del levantamiento', type:'date'},
+  {key:'fecha', label:'Fecha del levantamiento', type:'date', pairWithNext:true},
   {key:'tecnico', label:'Técnico responsable', type:'text'},
   {key:'notas_generales', label:'Observaciones del sitio (acceso, horarios, restricciones)', type:'textarea'}
 ];
@@ -480,6 +516,7 @@ var adminFilterOwnerId = 'ALL'; // filtro de "ver levantamientos de" para el adm
 var mainEl = document.getElementById('siti-main');
 var toastEl = document.getElementById('siti-toast');
 var userbarEl = document.getElementById('siti-userbar');
+var appRootEl = document.getElementById('siti-app');
 
 /* ================= UTIL ================= */
 
@@ -497,6 +534,47 @@ function passesShowIf(f, dataObj){
   return val === f.showIf.equals;
 }
 function genId(){ return 'lvt_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ================= TEMA (claro / oscuro) ================= */
+
+var THEME_KEY = 'siti_theme';
+function getPreferredTheme(){
+  try {
+    var saved = localStorage.getItem(THEME_KEY);
+    if(saved==='dark' || saved==='light') return saved;
+  } catch(e){}
+  try {
+    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+  } catch(e){}
+  return 'light';
+}
+function applyTheme(theme){
+  appRootEl.setAttribute('data-theme', theme);
+  try { document.documentElement.style.colorScheme = theme; } catch(e){}
+  try { localStorage.setItem(THEME_KEY, theme); } catch(e){}
+  var btn = document.getElementById('siti-theme-toggle');
+  if(btn) btn.textContent = theme==='dark' ? 'Modo claro' : 'Modo oscuro';
+}
+document.getElementById('siti-theme-toggle').addEventListener('click', function(){
+  var isDark = appRootEl.getAttribute('data-theme')==='dark';
+  applyTheme(isDark ? 'light' : 'dark');
+});
+applyTheme(getPreferredTheme());
+
+// Al imprimir / guardar como PDF, siempre se ve en modo claro (sin importar lo que se use en pantalla).
+window.addEventListener('beforeprint', function(){
+  if(appRootEl.getAttribute('data-theme')==='dark'){
+    appRootEl.setAttribute('data-print-restore','1');
+    appRootEl.setAttribute('data-theme','light');
+  }
+});
+window.addEventListener('afterprint', function(){
+  if(appRootEl.getAttribute('data-print-restore')==='1'){
+    appRootEl.removeAttribute('data-print-restore');
+    appRootEl.setAttribute('data-theme','dark');
+  }
+});
+
 function todayISO(){ var d=new Date(); return d.toISOString().slice(0,10); }
 function fmtDate(iso){
   if(!iso) return '—';
@@ -676,7 +754,7 @@ function renderUserbar(){
   var adminBtn = currentUser.role==='admin' ? '<button type="button" class="btn ghost" id="btn-goto-admin" style="padding:7px 11px;font-size:12.5px;">Administración</button>' : '';
   userbarEl.innerHTML =
     '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;">'+
-      '<span style="font-size:12px;color:#5c6659;">'+escapeHtml(currentUser.email)+(currentUser.role==='admin'?' · Admin':'')+'</span>'+
+      '<span style="font-size:12px;color:var(--text-muted);">'+escapeHtml(currentUser.email)+(currentUser.role==='admin'?' · Admin':'')+'</span>'+
       adminBtn+
       '<button type="button" class="btn ghost" id="btn-signout" style="padding:7px 11px;font-size:12.5px;">Salir</button>'+
     '</div>';
@@ -689,7 +767,7 @@ function renderLogin(){
   mainEl.innerHTML =
     '<div style="max-width:360px;margin:40px auto;">'+
     '<h2 class="disp" style="font-size:19px;margin-bottom:4px;">Iniciar sesión</h2>'+
-    '<p style="font-size:13px;color:#5c6659;margin-bottom:18px;">Usa tu correo y contraseña. Si es tu primera vez, crea una cuenta.</p>'+
+    '<p style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Usa tu correo y contraseña. Si es tu primera vez, crea una cuenta.</p>'+
     '<label class="field"><span>Correo</span><input type="email" id="auth-email" autocomplete="username"/></label>'+
     '<label class="field"><span>Contraseña</span><input type="password" id="auth-password" autocomplete="current-password"/></label>'+
     '<p id="auth-error" style="color:var(--danger);font-size:13px;display:none;margin-bottom:10px;"></p>'+
@@ -753,7 +831,7 @@ function fetchAllUsers(){
 
 function goAdmin(){
   view = 'admin';
-  mainEl.innerHTML = '<p style="color:#8a9385;font-size:14px;padding:20px 0;">Cargando usuarios…</p>';
+  mainEl.innerHTML = '<p style="color:var(--text-faint);font-size:14px;padding:20px 0;">Cargando usuarios…</p>';
   allUsersCache = null;
   fetchAllUsers().then(renderAdmin).catch(function(){
     showToast('No se pudo cargar la lista de usuarios.', true);
@@ -764,7 +842,7 @@ function renderAdmin(users){
   var rows = users.map(function(u){
     var isSelf = currentUser && u.uid===currentUser.uid;
     return '<div class="survey-card bracket">'+
-      '<h3 style="font-size:15px;">'+escapeHtml(u.email)+(isSelf?' <span style="font-size:11px;color:#8a9385;">(tú)</span>':'')+'</h3>'+
+      '<h3 style="font-size:15px;">'+escapeHtml(u.email)+(isSelf?' <span style="font-size:11px;color:var(--text-faint);">(tú)</span>':'')+'</h3>'+
       '<div class="meta">Alta: '+(u.createdAt ? new Date(u.createdAt).toLocaleDateString('es-MX') : '—')+'</div>'+
       '<div class="field-row" style="margin-top:10px;">'+
         '<label class="field"><span>Rol</span><select data-user-role="'+u.uid+'" '+(isSelf?'disabled':'')+'>'+
@@ -783,7 +861,7 @@ function renderAdmin(users){
   mainEl.innerHTML =
     '<div class="list-head"><h2 class="disp" style="font-size:19px;">Administración de usuarios</h2>'+
     '<button class="btn secondary" id="btn-admin-back">← Levantamientos</button></div>'+
-    (rows || '<div class="empty-state">Aún no hay usuarios registrados.</div>');
+    (rows ? '<div class="survey-grid">'+rows+'</div>' : '<div class="empty-state">Aún no hay usuarios registrados.</div>');
 
   document.getElementById('btn-admin-back').onclick = goList;
   mainEl.querySelectorAll('[data-user-role]').forEach(function(el){
@@ -988,9 +1066,20 @@ function renderFieldInput(f, value, dataAttrs, otherValue){
 }
 
 function renderGeneralSection(){
-  var html = GENERAL_FIELDS.map(function(f){
-    return renderFieldInput(f, current.general[f.key], 'data-general="'+f.key+'"');
-  }).join('');
+  var html = '';
+  for(var i=0;i<GENERAL_FIELDS.length;i++){
+    var f = GENERAL_FIELDS[i];
+    var attrs = 'data-general="'+f.key+'"';
+    if(f.pairWithNext && GENERAL_FIELDS[i+1]){
+      var f2 = GENERAL_FIELDS[i+1];
+      var html1 = renderFieldInput(f, current.general[f.key], attrs);
+      var html2 = renderFieldInput(f2, current.general[f2.key], 'data-general="'+f2.key+'"');
+      html += '<div class="field-row">'+html1+html2+'</div>';
+      i++;
+      continue;
+    }
+    html += renderFieldInput(f, current.general[f.key], attrs);
+  }
   return '<div class="section"><div class="sec-title disp">Datos generales del sitio</div><div class="sec-body">'+html+'</div></div>';
 }
 
@@ -1270,7 +1359,7 @@ function renderList(){
     html += '<div class="empty-state">Aún no hay levantamientos. Toca "+ Nuevo" para capturar el primero en sitio.</div>';
   } else {
     var sorted = indexData.slice().sort(function(a,b){ return (b.updatedAt||0)-(a.updatedAt||0); });
-    html += sorted.map(function(e){
+    html += '<div class="survey-grid">' + sorted.map(function(e){
       var chips = e.services.map(function(s){ return '<span class="chip">'+escapeHtml(SERVICES[s]?SERVICES[s].short:s)+'</span>'; }).join('');
       var ownerBadge = (isAdminAll && adminFilterOwnerId==='ALL' && e.ownerEmail) ? '<div class="meta">Capturado por: '+escapeHtml(e.ownerEmail)+'</div>' : '';
       return '<div class="survey-card bracket">'+
@@ -1283,7 +1372,7 @@ function renderList(){
           '<button class="btn ghost" data-edit="'+e.id+'">Editar</button>'+
           '<button class="btn danger" data-del="'+e.id+'">Eliminar</button>'+
         '</div></div>';
-    }).join('');
+    }).join('') + '</div>';
   }
   mainEl.innerHTML = html;
 
@@ -1335,7 +1424,7 @@ function renderList(){
 
 function goList(){
   view='list';
-  mainEl.innerHTML = '<p style="color:#8a9385;font-size:14px;padding:20px 0;">Cargando levantamientos…</p>';
+  mainEl.innerHTML = '<p style="color:var(--text-faint);font-size:14px;padding:20px 0;">Cargando levantamientos…</p>';
   loadIndex().then(function(data){
     indexData = data;
     if(view==='list') renderList();
@@ -1704,7 +1793,7 @@ if(hasClaudeStorage()){
 } else if(isFirebaseConfigured()){
   backend = 'firebase';
   setStorageNote('Cada técnico ve únicamente sus propios levantamientos. El administrador puede ver los de todo el equipo.');
-  mainEl.innerHTML = '<p style="color:#8a9385;font-size:14px;padding:20px 0;">Cargando…</p>';
+  mainEl.innerHTML = '<p style="color:var(--text-faint);font-size:14px;padding:20px 0;">Cargando…</p>';
   initFirebase().then(startFirebaseAuthListener).catch(function(){
     showToast('No se pudo conectar con Firebase. Revisa tu configuración.', true);
   });
